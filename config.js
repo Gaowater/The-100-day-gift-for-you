@@ -47,4 +47,4 @@ const cardsData = [
 ];
 
 // 你的心情预设（可选：yuyue / youxian / qidai / ziyou / beishang / gudu / fennu / yihan / wuliao / kongxu / fadian /）
-const myMood = "kongxu";
+const myMood = "qidai";
