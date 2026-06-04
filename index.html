@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>100天</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        (function() {
+            const theme = localStorage.getItem('dayTheme') || 'warm';
+            const map = {
+                warm: { start:'#fef9f0', mid:'#fdf3e4', end:'#fef9f0', card:'#fffdf9', main:'#5c4b3a', sub:'#8b7560', light:'#b8937a', hint:'#d4b896' },
+                pink: { start:'#fef7f5', mid:'#fdf0ed', end:'#fef7f5', card:'#fffaf8', main:'#6b4a4a', sub:'#8b6060', light:'#b08080', hint:'#d4a0a0' },
+                blue: { start:'#f5f8fb', mid:'#edf2f8', end:'#f5f8fb', card:'#f8fafc', main:'#4a5568', sub:'#607080', light:'#8090a0', hint:'#a0b0c0' },
+                green: { start:'#f6faf5', mid:'#eef5ec', end:'#f6faf5', card:'#f8fbf7', main:'#4a5c4a', sub:'#607860', light:'#809880', hint:'#a0b8a0' },
+                purple: { start:'#f9f7fc', mid:'#f2eef8', end:'#f9f7fc', card:'#faf8fc', main:'#5c4a6b', sub:'#706080', light:'#9080a0', hint:'#b0a0c0' },
+                gray: { start:'#f8f8f6', mid:'#f0f0ee', end:'#f8f8f6', card:'#fafaf9', main:'#5c5c5c', sub:'#707070', light:'#909090', hint:'#b0b0b0' }
+            };
+            const c = map[theme];
+            document.documentElement.style.setProperty('--bg-start', c.start);
+            document.documentElement.style.setProperty('--bg-mid', c.mid);
+            document.documentElement.style.setProperty('--bg-end', c.end);
+            document.documentElement.style.setProperty('--card-bg', c.card);
+            document.documentElement.style.setProperty('--text-main', c.main);
+            document.documentElement.style.setProperty('--text-sub', c.sub);
+            document.documentElement.style.setProperty('--text-light', c.light);
+            document.documentElement.style.setProperty('--text-hint', c.hint);
+        })();
+    </script>
+</head>
+<body>
+    <a href="settings.html" class="settings-link" title="设置">
+        <div class="settings-icon"></div>
+    </a>
+
+    <audio id="bgm" loop autoplay muted playsinline>
+        <source src="bgm.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="theme-toggle" id="themeToggle" title="切换昼夜">
+        <div class="toggle-icon">
+            <div class="sun">
+                <div class="sun-core"></div>
+                <div class="sun-ray r1"></div><div class="sun-ray r2"></div>
+                <div class="sun-ray r3"></div><div class="sun-ray r4"></div>
+                <div class="sun-ray r5"></div><div class="sun-ray r6"></div>
+                <div class="sun-ray r7"></div><div class="sun-ray r8"></div>
+            </div>
+            <div class="moon">
+                <div class="moon-body"></div>
+                <div class="moon-crater c1"></div><div class="moon-crater c2"></div>
+                <div class="moon-crater c3"></div><div class="moon-crater c4"></div>
+                <div class="moon-shadow"></div>
+            </div>
+            <div class="cloud c1"></div><div class="cloud c2"></div>
+            <div class="toggle-star s1"></div><div class="toggle-star s2"></div>
+            <div class="toggle-star s3"></div><div class="toggle-star s4"></div>
+            <div class="toggle-star s5"></div>
+        </div>
+    </div>
+
+    <div class="music-toggle" id="musicBtn" title="音乐开关">
+        <span class="music-icon-on">🔊</span>
+        <span class="music-icon-off" style="display:none;">🔇</span>
+    </div>
+
+    <!-- 心情选择弹窗 -->
+    <div class="mood-overlay" id="moodOverlay">
+        <div class="mood-panel">
+            <p class="mood-title">选择你的心情</p>
+            <div class="mood-options">
+                <div class="mood-item" data-mood="yuyue">
+                    <div class="mood-icon mood-yuyue"></div>
+                    <span>愉悦</span>
+                </div>
+                <div class="mood-item" data-mood="youxian">
+                    <div class="mood-icon mood-youxian"></div>
+                    <span>悠闲</span>
+                </div>
+                <div class="mood-item" data-mood="qidai">
+                    <div class="mood-icon mood-qidai"></div>
+                    <span>期待</span>
+                </div>
+                <div class="mood-item" data-mood="ziyou">
+                    <div class="mood-icon mood-ziyou"></div>
+                    <span>自由</span>
+                </div>
+                <div class="mood-item" data-mood="beishang">
+                    <div class="mood-icon mood-beishang"></div>
+                    <span>悲伤</span>
+                </div>
+                <div class="mood-item" data-mood="gudu">
+                    <div class="mood-icon mood-gudu"></div>
+                    <span>孤独</span>
+                </div>
+                <div class="mood-item" data-mood="fennu">
+                    <div class="mood-icon mood-fennu"></div>
+                    <span>愤怒</span>
+                </div>
+                <div class="mood-item" data-mood="yihan">
+                    <div class="mood-icon mood-yihan"></div>
+                    <span>遗憾</span>
+                </div>
+                <div class="mood-item" data-mood="wuliao">
+                    <div class="mood-icon mood-wuliao"></div>
+                    <span>无聊</span>
+                </div>
+                <div class="mood-item" data-mood="kongxu">
+                    <div class="mood-icon mood-kongxu"></div>
+                    <span>空虚</span>
+                </div>
+                <div class="mood-item" data-mood="fadian">
+                    <div class="mood-icon mood-fadian"></div>
+                    <span>发癫</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <header class="header" id="headerArea">
+            <div class="stars-container" id="starsContainer"></div>
+            <div class="header-moods">
+                <div class="mood-badge my-mood" id="myMoodBadge" title="我的心情">
+                    <div class="mood-badge-icon" id="myMoodIcon"></div>
+                </div>
+                <div class="days-badge">
+                    <span class="days-number" id="daysCount">100</span>
+                    <span class="days-label">天</span>
+                </div>
+                <div class="mood-badge her-mood" id="herMoodBadge" title="点击选择心情">
+                    <div class="mood-badge-icon" id="herMoodIcon"></div>
+                </div>
+            </div>
+            <p class="subtitle">始于 2026.02.07</p>
+            <p class="hint-text" id="headerHint">✨ 双击这里</p>
+        </header>
+
+        <div class="cards" id="cardsContainer"></div>
+
+        <footer class="footer">
+            <p id="todayDate"></p>
+            <p class="footer-quote" id="footerQuote"></p>
+            <div class="changelog">
+                <p class="changelog-toggle" id="changelogToggle">📋 更新日志</p>
+                <div class="changelog-content" id="changelogContent">
+                    <p>v1.5 · 2026.05.22 — 将其成功部署到我的网域里了！</p>
+                    <p>v1.4 · 2026.05.21 — 优化部分心情图标</p>
+                    <p>v1.3 · 2026.05.20 — 新增创作者的话</p>
+                    <p>v1.2 · 2026.05.18 — 新增疲惫、迷糊心情图标</p>
+                    <p>v1.1 · 2026.05.17 — 新增心情图标，更新日志，设置</p>
+                    <p>v1.0 · 2026.05.16 — 首次上线</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <div class="album-overlay" id="albumOverlay">
+        <div class="album-modal">
+            <span class="album-close">&times;</span>
+            <div class="album-grid"></div>
+            <div class="album-video">
+                <video controls playsinline>
+                    <source src="video.mp4" type="video/mp4">
+                    你的浏览器不支持视频播放
+                </video>
+            </div>
+        </div>
+    </div>
+
+    <div class="lightbox" id="lightbox" style="display:none;">
+        <span class="lightbox-close">&times;</span>
+        <img src="" alt="放大图片">
+    </div>
+
+    <script src="config.js"></script>
+    <script>
+        const startDate = new Date('2026-02-07');
+        const today = new Date();
+        const diffDays = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
+        document.getElementById('daysCount').textContent = diffDays >= 1 ? diffDays : 1;
+        document.getElementById('todayDate').textContent = `今天 ${today.getFullYear()}年${today.getMonth() + 1}月${today.getDate()}日`;
+
+        // 底部随机句子（保留你原有的350句文案，此处省略）
+        const quotesByDay = {
+            0: ["行到水穷处，坐看云起时。——王维","生活明朗，万物可爱","愿你眼里有光，心中有爱"],
+            1: ["今天也是元气满满的一天","阳光正好，微风不燥","新的一天，新的开始","保持热爱，奔赴山海"],
+            2: ["什么越洗越脏？水。","有些路看起来很近，走起来却很远","好事多磨"],
+            3: ["人生就像一盒巧克力。——《阿甘正传》","愿你被世界温柔以待","心之所向，素履以往"],
+            4: ["考拉的指纹和人类几乎一模一样。","傍晚的微风最温柔","今天也要好好吃饭","生活原本沉闷，跑起来就有风"],
+            5: ["向前跑，迎着冷眼和嘲笑。——《追梦赤子心》","星星发亮是为了让每个人都找到属于自己的星星","把普通的日子过得浪漫些"],
+            6: ["天才是百分之一的灵感加百分之九十九的汗水。——爱迪生","周末愉快","愿你做一个快乐的大人"]
+        };
+        document.getElementById('footerQuote').textContent = '「 ' + quotesByDay[today.getDay()][Math.floor(Math.random() * quotesByDay[today.getDay()].length)] + ' 」';
+
+        const container = document.getElementById('cardsContainer');
+        cardsData.forEach((card, index) => {
+            const cardEl = document.createElement('div');
+            cardEl.className = 'card';
+            let hintHTML = '';
+            if (index === 4) hintHTML = '<p class="card-hint">✦ 双击这里</p>';
+            if (index === 6) hintHTML = '<p class="card-hint">✦ 双击这里</p>';
+            if (index === 8) hintHTML = '<p class="card-hint">✦ 双击这里</p>';
+            cardEl.innerHTML = `
+                <div class="card-image" onclick="openLightbox('images/${card.image}')">
+                    <img src="images/${card.image}" alt="${card.title || '图片' + (index + 1)}" loading="lazy">
+                </div>
+                <div class="card-content">
+                    ${card.title ? `<h3 class="card-title">${card.title}</h3>` : ''}
+                    <p class="card-text">${card.text}</p>
+                    ${hintHTML}
+                </div>`;
+            if (index === 4) cardEl.addEventListener('dblclick', e => { e.preventDefault(); openAlbum(); });
+            if (index === 6) cardEl.addEventListener('dblclick', e => { e.preventDefault(); openSingleImage('images/album/secret.jpg'); });
+            if (index === 8) cardEl.addEventListener('dblclick', e => { e.preventDefault(); openAlbum2(); });
+            container.appendChild(cardEl);
+        });
+
+        /* --- 滚动渐入动画 --- */
+        function initScrollReveal() {
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.15, rootMargin: '0px 0px -30px 0px' });
+            document.querySelectorAll('.card').forEach(function(card) {
+                observer.observe(card);
+            });
+        }
+        initScrollReveal();
+
+        function openLightbox(src) { const lb = document.getElementById('lightbox'); lb.style.display = 'flex'; lb.querySelector('img').src = src; }
+        document.getElementById('lightbox').addEventListener('click', function(e) { if (e.target === this || e.target.className === 'lightbox-close') this.style.display = 'none'; });
+
+        function openAlbum() {
+            const overlay = document.getElementById('albumOverlay');
+            overlay.querySelector('.album-grid').innerHTML = '';
+            overlay.querySelector('.album-video').style.display = 'block';
+            ['a7.jpg','a8.jpg','a9.jpg','a10.jpg','a11.jpg','a12.jpg','a13.jpg','a14.jpg'].forEach(photo => {
+                const img = document.createElement('img');
+                img.src = 'images/album/' + photo; img.alt = '相册照片'; img.loading = 'lazy';
+                img.onclick = () => openLightbox('images/album/' + photo);
+                overlay.querySelector('.album-grid').appendChild(img);
+            });
+            overlay.style.display = 'flex'; document.body.style.overflow = 'hidden';
+        }
+
+        function openAlbum2() {
+            const overlay = document.getElementById('albumOverlay');
+            overlay.querySelector('.album-grid').innerHTML = '';
+            overlay.querySelector('.album-video').style.display = 'none';
+            ['a13.jpg','a14.jpg'].forEach(photo => {
+                const img = document.createElement('img');
+                img.src = 'images/album/' + photo; img.alt = '相册照片'; img.loading = 'lazy';
+                img.style.width = '200px';
+                img.style.height = '140px';
+                img.onclick = () => openLightbox('images/album/' + photo);
+                overlay.querySelector('.album-grid').appendChild(img);
+            });
+            overlay.style.display = 'flex'; document.body.style.overflow = 'hidden';
+        }
+
+        document.getElementById('albumOverlay').addEventListener('click', function(e) {
+            if (e.target === this || e.target.className === 'album-close') {
+                this.style.display = 'none';
+                document.body.style.overflow = '';
+                this.querySelector('.album-video').style.display = 'block';
+                const v = this.querySelector('video');
+                if (v) v.pause();
+            }
+        });
+
+        function openSingleImage(src) {
+            const overlay = document.createElement('div'); overlay.className = 'single-image-overlay';
+            overlay.innerHTML = `<span class="single-image-close">&times;</span><img src="${src}" alt="照片">`;
+            overlay.addEventListener('click', function(e) { if (e.target === overlay || e.target.className === 'single-image-close') { overlay.remove(); document.body.style.overflow = ''; } });
+            document.body.appendChild(overlay); document.body.style.overflow = 'hidden';
+        }
+
+        const headerArea = document.getElementById('headerArea'), starsContainer = document.getElementById('starsContainer'), headerHint = document.getElementById('headerHint');
+        let starsActive = false;
+        function createStars() {
+            starsContainer.innerHTML = '';
+            for (let i = 0; i < 16; i++) {
+                const star = document.createElement('div'); star.className = 'star-particle';
+                star.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;width:${2+Math.random()*4}px;height:${2+Math.random()*4}px;animation-delay:${Math.random()*3}s;animation-duration:${2+Math.random()*4}s;`;
+                starsContainer.appendChild(star);
+            }
+        }
+        headerArea.addEventListener('dblclick', e => { e.preventDefault(); if (!starsActive) { starsActive = true; headerArea.classList.add('stars-active'); headerHint.textContent = '✨ 星光已点亮'; createStars(); setTimeout(() => headerHint.style.opacity = '0.4', 2000); } });
+
+        const themeToggle = document.getElementById('themeToggle'); let isNight = false;
+        themeToggle.addEventListener('click', () => { isNight = !isNight; if (isNight) { document.body.classList.add('night-mode'); if (!starsActive) { starsActive = true; headerArea.classList.add('stars-active'); headerHint.textContent = '✨ 星光已点亮'; createStars(); setTimeout(() => headerHint.style.opacity = '0.4', 2000); } } else { document.body.classList.remove('night-mode'); } });
+
+        const bgm = document.getElementById('bgm'), musicBtn = document.getElementById('musicBtn'), iconOn = document.querySelector('.music-icon-on'), iconOff = document.querySelector('.music-icon-off');
+        let musicPlaying = true; bgm.muted = false; bgm.volume = 0.5;
+        bgm.play().catch(() => { musicPlaying = false; iconOn.style.display = 'none'; iconOff.style.display = 'inline'; });
+        musicBtn.addEventListener('click', () => { if (musicPlaying) { bgm.pause(); iconOn.style.display = 'none'; iconOff.style.display = 'inline'; } else { bgm.play(); iconOn.style.display = 'inline'; iconOff.style.display = 'none'; } musicPlaying = !musicPlaying; });
+
+        const moodMap = {
+            yuyue: 'mood-yuyue', youxian: 'mood-youxian', qidai: 'mood-qidai', ziyou: 'mood-ziyou',
+            beishang: 'mood-beishang', gudu: 'mood-gudu', fennu: 'mood-fennu', yihan: 'mood-yihan',
+            wuliao: 'mood-wuliao', kongxu: 'mood-kongxu', fadian: 'mood-fadian'
+        };
+        const myMoodIcon = document.getElementById('myMoodIcon');
+        myMoodIcon.className = 'mood-badge-icon ' + (moodMap[myMood] || 'mood-empty');
+        const herMoodIcon = document.getElementById('herMoodIcon');
+        const herMoodBadge = document.getElementById('herMoodBadge');
+        const savedMood = localStorage.getItem('herMood');
+        if (savedMood && moodMap[savedMood]) { herMoodIcon.className = 'mood-badge-icon ' + moodMap[savedMood]; }
+        else { herMoodIcon.className = 'mood-badge-icon mood-empty'; }
+        const moodOverlay = document.getElementById('moodOverlay');
+        herMoodBadge.addEventListener('click', () => { moodOverlay.style.display = 'flex'; document.body.style.overflow = 'hidden'; });
+        moodOverlay.addEventListener('click', function(e) { if (e.target === this) { moodOverlay.style.display = 'none'; document.body.style.overflow = ''; } });
+        document.querySelectorAll('.mood-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const mood = this.getAttribute('data-mood');
+                localStorage.setItem('herMood', mood);
+                herMoodIcon.className = 'mood-badge-icon ' + moodMap[mood];
+                moodOverlay.style.display = 'none';
+                document.body.style.overflow = '';
+            });
+        });
+
+        document.getElementById('changelogContent').style.display = 'none';
+        document.getElementById('changelogToggle').addEventListener('click', function() {
+            const content = document.getElementById('changelogContent');
+            content.style.display = content.style.display === 'block' ? 'none' : 'block';
+        });
+    </script>
+</body>
+</html>

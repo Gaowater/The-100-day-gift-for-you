@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设置 · 100天</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+            background: linear-gradient(180deg, #fef9f0 0%, #fdf3e4 30%, #fef9f0 100%);
+            min-height: 100vh;
+            color: #5c4b3a;
+            line-height: 1.8;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px 20px 60px;
+        }
+
+        .back-link {
+            position: absolute;
+            top: 32px;
+            left: 28px;
+            z-index: 998;
+            font-size: 18px;
+            color: #d4c0a8;
+            text-decoration: none;
+            letter-spacing: 1px;
+            transition: color 0.3s ease;
+        }
+        .back-link:hover { color: #b8937a; }
+
+        .page-title {
+            text-align: center;
+            font-size: 20px;
+            font-weight: 400;
+            color: #b8937a;
+            letter-spacing: 4px;
+            margin-bottom: 40px;
+            padding-top: 20px;
+        }
+
+        .setting-group {
+            margin-bottom: 32px;
+        }
+
+        .setting-group-title {
+            font-size: 11px;
+            color: #c4a88c;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            padding-left: 8px;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fffdf9;
+            border-radius: 12px;
+            padding: 16px 18px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            box-shadow: 0 1px 6px rgba(180, 150, 120, 0.06);
+        }
+        .setting-item:hover {
+            background: #fdf7ef;
+        }
+        .setting-item span:first-child {
+            font-size: 15px;
+            color: #5c4b3a;
+            letter-spacing: 1px;
+        }
+        .setting-arrow {
+            font-size: 18px;
+            color: #d4b896;
+        }
+
+        .theme-colors {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .color-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.2s ease, transform 0.2s ease;
+        }
+        .color-dot:hover {
+            transform: scale(1.1);
+        }
+        .color-dot.active {
+            border-color: #8b7560;
+        }
+        .color-warm { background: #fdf3e4; border: 1px solid #d4b896; }
+.color-pink { background: #fdf0ed; border: 1px solid #c0a0a0; }
+.color-blue { background: #edf2f8; border: 1px solid #a0b0c0; }
+.color-green { background: #eef5ec; border: 1px solid #a0b8a0; }
+.color-purple { background: #f2eef8; border: 1px solid #b0a0c0; }
+.color-gray { background: #f0f0ee; border: 1px solid #b0b0b0; }
+        .toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            background: rgba(60, 40, 25, 0.88);
+            color: #fef9f0;
+            padding: 12px 24px;
+            border-radius: 24px;
+            font-size: 14px;
+            letter-spacing: 2px;
+            z-index: 3000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 24px 14px 40px;
+            }
+            .setting-item {
+                padding: 14px 16px;
+            }
+        }
+
+        /* ========== 创作者的话 - 密码弹窗 ========== */
+        .creator-password-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 4000;
+            align-items: center;
+            justify-content: center;
+        }
+        .creator-password-box {
+            background: #1a1a2e;
+            border: 1px solid #3a3a58;
+            border-radius: 16px;
+            padding: 32px 28px 24px;
+            width: 280px;
+            text-align: center;
+            position: relative;
+        }
+        .creator-password-close {
+            position: absolute;
+            top: 8px; right: 14px;
+            font-size: 26px;
+            color: #888;
+            cursor: pointer;
+        }
+        .creator-password-title {
+            font-size: 16px;
+            color: #c8c0b8;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+        .creator-password-input {
+            width: 100%;
+            padding: 10px 14px;
+            background: #252540;
+            border: 1px solid #3a3a58;
+            border-radius: 8px;
+            color: #e0d8d0;
+            font-size: 16px;
+            text-align: center;
+            outline: none;
+            margin-bottom: 16px;
+        }
+        .creator-password-input:focus { border-color: #9080b0; }
+        .creator-password-btn {
+            width: 100%;
+            padding: 10px;
+            background: #3a3a58;
+            border: none;
+            border-radius: 8px;
+            color: #d0c8c0;
+            font-size: 14px;
+            letter-spacing: 2px;
+            cursor: pointer;
+        }
+        .creator-password-btn:hover { background: #4a4a6a; }
+        .creator-password-error {
+            font-size: 12px;
+            color: #c06060;
+            margin-top: 10px;
+            min-height: 18px;
+        }
+
+        /* ========== 创作者的话 - 内容页 ========== */
+        .creator-note-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 4001;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .creator-note-box {
+        background: #1a1a2e;
+        border: none;
+        border-radius: 16px;
+        padding: 40px 36px 36px;
+        width: 480px;
+        max-width: 90vw;
+        max-height: 75vh;
+        overflow-y: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        position: relative;
+        text-align: center;
+        }
+        
+        .creator-note-close {
+            position: absolute;
+            top: 8px; right: 14px;
+            font-size: 26px;
+            color: #888;
+            cursor: pointer;
+        }
+        .creator-note-title {
+            font-size: 18px;
+            color: #e0d8c8;
+            letter-spacing: 3px;
+            margin-bottom: 18px;
+        }
+                .creator-note-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            text-align: left;
+        }
+
+        .note-card {
+            background: #252540;
+            border: 1px solid #3a3a58;
+            border-radius: 12px;
+            padding: 16px 18px;
+        }
+
+        .note-card p {
+            font-size: 14px;
+            color: #c8c0b0;
+            line-height: 2;
+            letter-spacing: 1px;
+        }
+        .creator-note-content {
+        font-size: 15px;
+        color: #c8c0b0;
+        line-height: 2.2;
+        letter-spacing: 1px;
+        white-space: pre-wrap;
+        text-align: left;
+        max-width: 400px;
+        margin: 0 auto;
+        }
+        
+        .creator-note-box::-webkit-scrollbar {
+        display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- 返回 -->
+    <a href="index.html" class="back-link" title="返回">← 返回</a>
+
+    <div class="container">
+        <h1 class="page-title">设 置</h1>
+
+        <!-- 主题色 -->
+        <div class="setting-group">
+            <p class="setting-group-title">主题色</p>
+            <div class="theme-colors" id="themeColors">
+                <div class="color-dot color-warm" data-theme="warm"></div>
+                <div class="color-dot color-pink" data-theme="pink"></div>
+                <div class="color-dot color-blue" data-theme="blue"></div>
+                <div class="color-dot color-green" data-theme="green"></div>
+                <div class="color-dot color-purple" data-theme="purple"></div>
+                <div class="color-dot color-gray" data-theme="gray"></div>
+            </div>
+        </div>
+
+        <!-- 其他设置 -->
+        <div class="setting-group">
+            <p class="setting-group-title">其他</p>
+            <div class="setting-item" id="resetMood">
+                <span>重置心情</span>
+                <span class="setting-arrow">›</span>
+            </div>
+            <div class="setting-item" id="creatorNoteTrigger">
+                <span>创作者的话</span>
+                <span class="setting-arrow">›</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast 提示 -->
+    <div class="toast" id="toast"></div>
+
+    <!-- 创作者的话 - 密码弹窗 -->
+    <div class="creator-password-overlay" id="creatorPasswordOverlay">
+        <div class="creator-password-box">
+            <span class="creator-password-close" id="creatorPasswordClose">&times;</span>
+            <p class="creator-password-title">🔒 输入密码</p>
+            <input type="password" class="creator-password-input" id="creatorPasswordInput" placeholder="请输入密码">
+            <button class="creator-password-btn" id="creatorPasswordBtn">确认</button>
+            <p class="creator-password-error" id="creatorPasswordError"></p>
+        </div>
+    </div>
+
+    <!-- 创作者的话 - 内容页 -->
+        <!-- 创作者的话 - 内容页 -->
+    <div class="creator-note-overlay" id="creatorNoteOverlay">
+        <div class="creator-note-box">
+            <span class="creator-note-close" id="creatorNoteClose">&times;</span>
+            <p class="creator-note-title">创作者的话</p>
+            <div class="creator-note-cards" id="creatorNoteCards">
+                <div class="note-card">
+                    <p>如果你能看到这些话了，就意味着我盼望好久的那一天到来了！如果你没有机会看到这个的话···我想这一切就都没有了意义，可能几个月或者几年后我才能缓过来吧（😭）2026.5.20</p>
+                </div>
+                <div class="note-card">
+                    <p>啊啊啊！我好想和你待在一起啊！我心里真的好急啊今天！2026.5.20</p>
+                </div>
+                <div class="note-card">
+                    <p>5.18那次梦里我终于和你在一起了，牵手拥抱逛街亲嘴，一切都是那么美好~2026.5.20</p>
+                </div>
+                <div class="note-card">
+                    <p>我完全理解且支持你这几天甘青宁考试必须要早睡，我也希望这样！希望你能调整好状态！但是…突然间的改变，自私地且没分清主要矛盾地来看，我还是好难过啊…我怕这种失去的感觉，因为这让我再次感受到那种强烈的孤独感，又变成了孤身一人，我怕这种感觉…2026.5.21凌晨</p>
+                </div>
+                <div class="note-card">
+                    <p>上面那句话就是我今天一整天那么想你！状态很奇怪的原因…2026.5.21凌晨</p>
+                </div>
+                 <div class="note-card">
+                    <p>依旧很想你！这个密码其实也是形同虚设，我昨晚说的暴力破解其实就是电脑右键查看源代码就可以看到我写的话了···但我实在想把这些话给你说出来，只能借助这么一种有些无可奈何的方式写给你听了（即使你完全看不到目前），让我“欺骗欺骗”自己吧2026.5.21</p>
+                </div>
+                <div class="note-card">
+                    <p>嗨嗨！心情又变好了！心态已经调整好了～哪怕每天的聊天时间很短，但只要是认真对待的，又何必伤心呢？因为是认真对待的，所以我不是孤独的！有人在陪我！哪怕时间很短，但那也是用心地陪伴！2026.5.23凌晨</p>
+               </div>
+                <div class="note-card">
+                    <p>这几天一直在搞blog这个更大的项目，以至于这边的更新懈怠了，但今天又经历了一下5.20开始的事，你再次早睡了。或许是因为你放学回来得早，咱俩的聊天时间没那么短，以至于我的心情还不错～没有那一次的那么难过焦急…嘿嘿，而且我也真心希望你最后能取得一个好的结果！</p>2026.5.26</p>
+                </div>
+                 <div class="note-card">
+                    <p>好嘛~被车剐蹭弄到绿化带里了，哈哈哈哈。又可怜又好笑，不过这只是个引子，想引出的是你没有回我早上的信息···emm 心里总觉得怪怪的，就是有点不舒服，不过因为你受到了更大的伤害，我也不好说这件事，所以就在这里说说，平复一下心情···我说我emo了，嗯···也不算全是玩笑话吧··哈哈···</p>2026.5.29</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== Toast ==========
+        const toast = document.getElementById('toast');
+        function showToast(msg) {
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 1800);
+        }
+
+        // ========== 主题色 ==========
+        const currentTheme = localStorage.getItem('dayTheme') || 'warm';
+        document.querySelectorAll('.color-dot').forEach(dot => {
+            if (dot.getAttribute('data-theme') === currentTheme) {
+                dot.classList.add('active');
+            }
+            dot.addEventListener('click', function() {
+                const theme = this.getAttribute('data-theme');
+                localStorage.setItem('dayTheme', theme);
+                document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+                this.classList.add('active');
+                showToast('主题已切换，刷新主页生效');
+            });
+        });
+
+        // ========== 重置她的心情 ==========
+        document.getElementById('resetMood').addEventListener('click', function() {
+            localStorage.removeItem('herMood');
+            showToast('心情已重置');
+        });
+
+        // ========== 创作者的话 ==========
+        const CREATOR_PASSWORD = '975344';
+
+        document.getElementById('creatorNoteTrigger').addEventListener('click', function() {
+            document.getElementById('creatorPasswordOverlay').style.display = 'flex';
+            document.getElementById('creatorPasswordInput').value = '';
+            document.getElementById('creatorPasswordError').textContent = '';
+            setTimeout(() => document.getElementById('creatorPasswordInput').focus(), 100);
+        });
+
+        document.getElementById('creatorPasswordClose').addEventListener('click', function() {
+            document.getElementById('creatorPasswordOverlay').style.display = 'none';
+        });
+
+        document.getElementById('creatorPasswordOverlay').addEventListener('click', function(e) {
+            if (e.target === this) this.style.display = 'none';
+        });
+
+        document.getElementById('creatorPasswordBtn').addEventListener('click', function() {
+            const input = document.getElementById('creatorPasswordInput');
+            if (input.value === CREATOR_PASSWORD) {
+                document.getElementById('creatorPasswordOverlay').style.display = 'none';
+                document.getElementById('creatorNoteOverlay').style.display = 'flex';
+            } else {
+                document.getElementById('creatorPasswordError').textContent = '密码错误';
+                input.value = '';
+            }
+        });
+
+        document.getElementById('creatorPasswordInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') document.getElementById('creatorPasswordBtn').click();
+        });
+
+        document.getElementById('creatorNoteClose').addEventListener('click', function() {
+            document.getElementById('creatorNoteOverlay').style.display = 'none';
+        });
+
+        document.getElementById('creatorNoteOverlay').addEventListener('click', function(e) {
+            if (e.target === this) this.style.display = 'none';
+        });
+    </script>
+</body>
+</html>
