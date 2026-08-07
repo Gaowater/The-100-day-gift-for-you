@@ -4,37 +4,164 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>100天</title>
+  <!-- 霞鹜文楷 — 规整手写楷体 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css">
   <link rel="stylesheet" href="style.css">
   <script>
     // 主题色 — 在 paint 前注入 CSS 变量，避免闪烁
     (function() {
       var theme = localStorage.getItem('dayTheme') || 'warm';
       var map = {
-        warm:   { start:'#fef9f0', mid:'#fdf3e4', end:'#fef9f0', card:'#fffdf9', main:'#5c4b3a', sub:'#8b7560', light:'#b8937a', hint:'#d4b896' },
-        pink:   { start:'#fef7f5', mid:'#fdf0ed', end:'#fef7f5', card:'#fffaf8', main:'#6b4a4a', sub:'#8b6060', light:'#b08080', hint:'#d4a0a0' },
-        blue:   { start:'#f5f8fb', mid:'#edf2f8', end:'#f5f8fb', card:'#f8fafc', main:'#4a5568', sub:'#607080', light:'#8090a0', hint:'#a0b0c0' },
-        green:  { start:'#f6faf5', mid:'#eef5ec', end:'#f6faf5', card:'#f8fbf7', main:'#4a5c4a', sub:'#607860', light:'#809880', hint:'#a0b8a0' },
-        purple: { start:'#f9f7fc', mid:'#f2eef8', end:'#f9f7fc', card:'#faf8fc', main:'#5c4a6b', sub:'#706080', light:'#9080a0', hint:'#b0a0c0' },
-        gray:   { start:'#f8f8f6', mid:'#f0f0ee', end:'#f8f8f6', card:'#fafaf9', main:'#5c5c5c', sub:'#707070', light:'#909090', hint:'#b0b0b0' }
+        warm:   { start:'#f8f1e3', mid:'#f4ebd8', end:'#f8f1e3', card:'#fdf8ee', main:'#46382a', sub:'#6b5944', light:'#92795c', hint:'#b49c7c' },
+        pink:   { start:'#faf2ec', mid:'#f7e9e0', end:'#faf2ec', card:'#fdf7f2', main:'#5c4040', sub:'#7d5a5a', light:'#a07a7a', hint:'#c0a0a0' },
+        blue:   { start:'#f0f4f7', mid:'#e6edf3', end:'#f0f4f7', card:'#f6f9fb', main:'#3d4a5c', sub:'#5a6a80', light:'#7a8ca0', hint:'#a0b0c0' },
+        green:  { start:'#f1f6ee', mid:'#e7f0e2', end:'#f1f6ee', card:'#f7faf4', main:'#41543f', sub:'#5f7459', light:'#7d9477', hint:'#a0b89a' },
+        purple: { start:'#f6f2f9', mid:'#ece4f3', end:'#f6f2f9', card:'#faf7fc', main:'#4f4260', sub:'#6e5c80', light:'#8e7aa0', hint:'#b0a0c0' },
+        gray:   { start:'#f4f4f2', mid:'#ececea', end:'#f4f4f2', card:'#f9f9f7', main:'#4a4a4a', sub:'#686868', light:'#888888', hint:'#a8a8a8' }
       };
       var c = map[theme] || map.warm;
       var root = document.documentElement;
-      root.style.setProperty('--bg-start',  c.start);
-      root.style.setProperty('--bg-mid',    c.mid);
-      root.style.setProperty('--bg-end',    c.end);
-      root.style.setProperty('--card-bg',   c.card);
-      root.style.setProperty('--text-main', c.main);
-      root.style.setProperty('--text-sub',  c.sub);
-      root.style.setProperty('--text-light',c.light);
-      root.style.setProperty('--text-hint', c.hint);
+      root.style.setProperty('--paper-0',  c.start);
+      root.style.setProperty('--paper-1',  c.mid);
+      root.style.setProperty('--paper-2',  c.card);
+      root.style.setProperty('--ink-900',  c.main);
+      root.style.setProperty('--ink-700',  c.sub);
+      root.style.setProperty('--ink-500',  c.light);
+      root.style.setProperty('--ink-300',  c.hint);
     })();
   </script>
 </head>
 <body>
 
+  <!-- ====== SVG 图标库(心情 / 设置 / 昼夜) ====== -->
+  <svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+    <!-- 愉悦:弯眼微笑 + 光芒 -->
+    <symbol id="mood-yuyue" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 1.8v2M12 20.2v2M1.8 12.6v2M20.2 12.6v2M4.9 5.5l1.5 1.5M17.6 18.2l1.5 1.5M19.1 5.5l-1.5 1.5M6.4 18.2l-1.5 1.5"/>
+        <circle cx="12" cy="12.6" r="8"/>
+        <path d="M7.7 10.9q1.5-1.7 3.1-.1M13.2 10.8q1.6-1.6 3.1.1"/>
+        <path d="M8.9 15.6q3.1 2.4 6.2 0"/>
+      </g>
+    </symbol>
+    <!-- 悠闲:平缓眯眼 + 浅笑 + 小云 -->
+    <symbol id="mood-youxian" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12.9" r="7.9"/>
+        <path d="M7.8 11.4q1.8-.4 3.4 0M12.8 11.4q1.8-.4 3.4 0"/>
+        <path d="M9.3 15.4q2.7 1.8 5.4 0"/>
+        <circle cx="13.6" cy="7.7" r="1.7"/>
+        <circle cx="16.3" cy="8.1" r="1.3"/>
+        <path d="M12.2 8.5h6"/>
+      </g>
+    </symbol>
+    <!-- 期待:星星眼 + 微笑 -->
+    <symbol id="mood-qidai" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12.6" r="8"/>
+        <path d="M8.4 9l.8 1.5 1.6.3-1.1 1.1.2 1.6-1.5-.8-1.5.8.2-1.6-1.1-1.1 1.6-.3z" fill="currentColor" stroke="none"/>
+        <path d="M15.6 9l.8 1.5 1.6.3-1.1 1.1.2 1.6-1.5-.8-1.5.8.2-1.6-1.1-1.1 1.6-.3z" fill="currentColor" stroke="none"/>
+        <path d="M9.1 15.5q2.9 2.3 5.8 0"/>
+      </g>
+    </symbol>
+    <!-- 自由:眯眼微笑 + 双翼 -->
+    <symbol id="mood-ziyou" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12.9" r="7.9"/>
+        <path d="M7.7 11.4q1.8-.4 3.4 0M12.9 11.4q1.8-.4 3.4 0"/>
+        <path d="M9.2 15.4q2.8 1.8 5.6 0"/>
+        <path d="M5.2 11.6c-1.2-.4-2.1-1.2-2.7-2.4M5.2 12.5c-1.3-.1-2.4-.6-3.3-1.4"/>
+        <path d="M18.8 11.6c1.2-.4 2.1-1.2 2.7-2.4M18.8 12.5c1.3-.1 2.4-.6 3.3-1.4"/>
+      </g>
+    </symbol>
+    <!-- 悲伤:八字眉 + 泪滴 + 撇嘴 -->
+    <symbol id="mood-beishang" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12.6" r="8"/>
+        <path d="M7.9 8.6q1.3.8 2.4.2M16.1 8.6q-1.3.8-2.4.2"/>
+        <path d="M8.2 11.4h2.9M12.9 11.4h2.9"/>
+        <path d="M6.7 12.8c-.6 1.3-1.6 2-1.6 2.9a1.6 1.6 0 0 0 3.2 0c0-.9-1-1.6-1.6-2.9z" fill="currentColor" stroke="none"/>
+        <path d="M8.8 16.4q3.2-2.6 6.4 0"/>
+      </g>
+    </symbol>
+    <!-- 孤独:空心眼 + 无表情 + 远方星 -->
+    <symbol id="mood-gudu" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12.6" r="8"/>
+        <circle cx="8.7" cy="11.7" r="1.2"/>
+        <circle cx="15.3" cy="11.7" r="1.2"/>
+        <path d="M10.5 16.2h3"/>
+        <path d="M18.6 5l.6 1.1 1.1.2-.8.8.2 1.1-1.1-.5-1.1.5.2-1.1-.8-.8 1.1-.2z" fill="currentColor" stroke="none"/>
+      </g>
+    </symbol>
+    <!-- 愤怒:倒V眉 + 怒目 + 咬牙 -->
+    <symbol id="mood-fennu" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12.6" r="8"/>
+        <path d="M6.7 8.4l2.8 1.5M17.3 8.4l-2.8 1.5"/>
+        <circle cx="8.8" cy="12.2" r="1.2" fill="currentColor" stroke="none"/>
+        <circle cx="15.2" cy="12.2" r="1.2" fill="currentColor" stroke="none"/>
+        <path d="M9.1 16.3q2.9-2.2 5.8 0"/>
+      </g>
+    </symbol>
+    <!-- 遗憾:无神眼 + 歪嘴 + 叹气 -->
+    <symbol id="mood-yihan" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12.6" r="8"/>
+        <path d="M7.9 11.4h3M13.1 11.4h3"/>
+        <path d="M9.2 15.7q3 1.1 5.9.1"/>
+        <path d="M17.8 5.4v2.6"/>
+        <circle cx="17.8" cy="9.6" r="0.6" fill="currentColor" stroke="none"/>
+      </g>
+    </symbol>
+    <!-- 无聊:无神眼 + 哈欠 + zz -->
+    <symbol id="mood-wuliao" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12.6" r="8"/>
+        <path d="M7.8 11.4h3M13.2 11.4h3"/>
+        <ellipse cx="12" cy="16" rx="1.6" ry="2"/>
+        <path d="M17.3 4.6h2.4l-2.4 2.3h2.4"/>
+      </g>
+    </symbol>
+    <!-- 空虚:大空心眼 + O嘴 -->
+    <symbol id="mood-kongxu" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12.6" r="8"/>
+        <circle cx="8.7" cy="11.8" r="2"/>
+        <circle cx="15.3" cy="11.8" r="2"/>
+        <circle cx="12" cy="16.2" r="1.3"/>
+      </g>
+    </symbol>
+    <!-- 发癫:X眼 + 波浪嘴 -->
+    <symbol id="mood-fadian" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12.6" r="8"/>
+        <path d="M7.1 9.9l3.3 3.1M10.4 9.9l-3.3 3.1M13.6 9.9l3.3 3.1M16.9 9.9l-3.3 3.1"/>
+        <path d="M8.7 16.1q1.2 1.6 2.4 0q1.2-1.6 2.4 0q1.2 1.6 2.4 0"/>
+      </g>
+    </symbol>
+    <!-- 设置:齿轮 -->
+    <symbol id="icon-settings" viewBox="0 0 24 24">
+      <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="12" y1="5.4" x2="12" y2="2.8"/>
+        <line x1="12" y1="5.4" x2="12" y2="2.8" transform="rotate(45 12 12)"/>
+        <line x1="12" y1="5.4" x2="12" y2="2.8" transform="rotate(90 12 12)"/>
+        <line x1="12" y1="5.4" x2="12" y2="2.8" transform="rotate(135 12 12)"/>
+        <line x1="12" y1="5.4" x2="12" y2="2.8" transform="rotate(180 12 12)"/>
+        <line x1="12" y1="5.4" x2="12" y2="2.8" transform="rotate(225 12 12)"/>
+        <line x1="12" y1="5.4" x2="12" y2="2.8" transform="rotate(270 12 12)"/>
+        <line x1="12" y1="5.4" x2="12" y2="2.8" transform="rotate(315 12 12)"/>
+        <circle cx="12" cy="12" r="6.4"/>
+        <circle cx="12" cy="12" r="2.1"/>
+      </g>
+    </symbol>
+  </svg>
+
   <!-- ====== 设置入口 ====== -->
   <a href="settings.html" class="settings-link" title="设置">
-    <div class="settings-icon"></div>
+    <svg class="settings-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <use href="#icon-settings"/>
+    </svg>
   </a>
 
   <!-- ====== 背景音乐 ====== -->
@@ -45,23 +172,20 @@
   <!-- ====== 昼夜切换 ====== -->
   <div class="theme-toggle" id="themeToggle" title="切换昼夜">
     <div class="toggle-icon">
-      <div class="sun">
-        <div class="sun-core"></div>
-        <div class="sun-ray r1"></div><div class="sun-ray r2"></div>
-        <div class="sun-ray r3"></div><div class="sun-ray r4"></div>
-        <div class="sun-ray r5"></div><div class="sun-ray r6"></div>
-        <div class="sun-ray r7"></div><div class="sun-ray r8"></div>
-      </div>
-      <div class="moon">
-        <div class="moon-body"></div>
-        <div class="moon-crater c1"></div><div class="moon-crater c2"></div>
-        <div class="moon-crater c3"></div><div class="moon-crater c4"></div>
-        <div class="moon-shadow"></div>
-      </div>
-      <div class="cloud c1"></div><div class="cloud c2"></div>
-      <div class="toggle-star s1"></div><div class="toggle-star s2"></div>
-      <div class="toggle-star s3"></div><div class="toggle-star s4"></div>
-      <div class="toggle-star s5"></div>
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <!-- 太阳:中心圆 + 8 道放射光芒(暖金) -->
+        <g class="sun-group" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+          <circle cx="12" cy="12" r="4.2"/>
+          <path d="M12 2.4v2.4M12 19.2v2.4M2.4 12h2.4M19.2 12h2.4M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M19.4 4.6l-1.7 1.7M6.3 17.7l-1.7 1.7"/>
+        </g>
+        <!-- 月亮:月牙 + 星星(银白) -->
+        <g class="moon-group">
+          <path d="M17.2 5.6a6.8 6.8 0 1 0 0 12.8 5.3 5.3 0 0 1 0-12.8z" fill="currentColor" stroke="none"/>
+          <path d="M5.4 6.8l.38 1.02 1.02.32-.82.7.22 1.02-.8-.48-.8.48.22-1.02-.82-.7 1.02-.32z" fill="currentColor" stroke="none"/>
+          <circle cx="18.8" cy="17.6" r="0.7" fill="currentColor" stroke="none"/>
+          <circle cx="6.2" cy="17" r="0.5" fill="currentColor" stroke="none"/>
+        </g>
+      </svg>
     </div>
   </div>
 
@@ -76,17 +200,17 @@
     <div class="mood-panel">
       <p class="mood-title">选择你的心情</p>
       <div class="mood-options">
-        <div class="mood-item" data-mood="yuyue">   <div class="mood-icon mood-yuyue"></div><span>愉悦</span></div>
-        <div class="mood-item" data-mood="youxian"> <div class="mood-icon mood-youxian"></div><span>悠闲</span></div>
-        <div class="mood-item" data-mood="qidai">   <div class="mood-icon mood-qidai"></div><span>期待</span></div>
-        <div class="mood-item" data-mood="ziyou">   <div class="mood-icon mood-ziyou"></div><span>自由</span></div>
-        <div class="mood-item" data-mood="beishang"><div class="mood-icon mood-beishang"></div><span>悲伤</span></div>
-        <div class="mood-item" data-mood="gudu">    <div class="mood-icon mood-gudu"></div><span>孤独</span></div>
-        <div class="mood-item" data-mood="fennu">   <div class="mood-icon mood-fennu"></div><span>愤怒</span></div>
-        <div class="mood-item" data-mood="yihan">   <div class="mood-icon mood-yihan"></div><span>遗憾</span></div>
-        <div class="mood-item" data-mood="wuliao">  <div class="mood-icon mood-wuliao"></div><span>无聊</span></div>
-        <div class="mood-item" data-mood="kongxu">  <div class="mood-icon mood-kongxu"></div><span>空虚</span></div>
-        <div class="mood-item" data-mood="fadian">  <div class="mood-icon mood-fadian"></div><span>发癫</span></div>
+        <div class="mood-item" data-mood="yuyue">   <svg class="mood-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#mood-yuyue"/></svg><span>愉悦</span></div>
+        <div class="mood-item" data-mood="youxian"> <svg class="mood-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#mood-youxian"/></svg><span>悠闲</span></div>
+        <div class="mood-item" data-mood="qidai">   <svg class="mood-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#mood-qidai"/></svg><span>期待</span></div>
+        <div class="mood-item" data-mood="ziyou">   <svg class="mood-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#mood-ziyou"/></svg><span>自由</span></div>
+        <div class="mood-item" data-mood="beishang"><svg class="mood-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#mood-beishang"/></svg><span>悲伤</span></div>
+        <div class="mood-item" data-mood="gudu">    <svg class="mood-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#mood-gudu"/></svg><span>孤独</span></div>
+        <div class="mood-item" data-mood="fennu">   <svg class="mood-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#mood-fennu"/></svg><span>愤怒</span></div>
+        <div class="mood-item" data-mood="yihan">   <svg class="mood-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#mood-yihan"/></svg><span>遗憾</span></div>
+        <div class="mood-item" data-mood="wuliao">  <svg class="mood-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#mood-wuliao"/></svg><span>无聊</span></div>
+        <div class="mood-item" data-mood="kongxu">  <svg class="mood-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#mood-kongxu"/></svg><span>空虚</span></div>
+        <div class="mood-item" data-mood="fadian">  <svg class="mood-icon" viewBox="0 0 24 24" aria-hidden="true"><use href="#mood-fadian"/></svg><span>发癫</span></div>
       </div>
     </div>
   </div>
@@ -107,18 +231,44 @@
           <div class="mood-badge-icon" id="herMoodIcon"></div>
         </div>
       </div>
+
+      <!-- 下一个百天进度 -->
+      <div class="milestone" id="milestone" style="opacity:0;">
+        <div class="milestone-label">
+          <span id="milestoneFrom">第 100 天</span>
+          <span id="milestoneTo">第 200 天</span>
+        </div>
+        <div class="milestone-track">
+          <div class="milestone-fill" id="milestoneFill"></div>
+        </div>
+        <p class="milestone-note" id="milestoneNote"></p>
+      </div>
+
       <p class="subtitle">始于 2026.02.07</p>
       <p class="hint-text" id="headerHint">✨ 双击这里</p>
     </header>
 
     <div class="cards" id="cardsContainer"></div>
 
+    <!-- ====== 纪念日笺 ====== -->
+    <section class="anniversary-section" id="anniversarySection" style="opacity:0;">
+      <div class="section-heading">
+        <p class="sec-cn">值得铭记的日子</p>
+        <p class="sec-en">OUR DAYS</p>
+      </div>
+      <div class="anniversary-paper">
+        <div class="anniversary-list" id="anniversaryList"></div>
+      </div>
+    </section>
+
     <footer class="footer">
       <p id="todayDate"></p>
       <p class="footer-quote" id="footerQuote"></p>
+      <div class="footer-seal" title="始于 2026.02.07"><span>始于<br>贰〇二六</span></div>
       <div class="changelog">
         <p class="changelog-toggle" id="changelogToggle">📋 更新日志</p>
         <div class="changelog-content" id="changelogContent">
+          <p>v2.0 · 2026.08.07 — 纸书手作风重设计:米纸质感、手写楷体、朱砂印章;新增纪念日笺与百天进度;相册灯箱支持左右切换</p>
           <p>v1.6 · 2026.06.04 — 安装了pnpm git 修改起来更容易了 而且不打算对此做过多的修改了，因为太容易崩了，所以就稳稳当当的，就像刚诞生那样，在这里保持那份最原始最开始的青涩纯真吧！</p>
           <p>v1.5 · 2026.05.22 — 将其成功部署到我的网域里了！</p>
           <p>v1.4 · 2026.05.21 — 优化部分心情图标</p>
@@ -145,10 +295,13 @@
     </div>
   </div>
 
-  <!-- ====== 灯箱 ====== -->
+  <!-- ====== 灯箱(支持左右切换) ====== -->
   <div class="lightbox" id="lightbox" style="display:none;">
     <span class="lightbox-close">&times;</span>
+    <span class="lightbox-prev" id="lightboxPrev">&#10094;</span>
+    <span class="lightbox-next" id="lightboxNext">&#10095;</span>
     <img src="" alt="放大图片">
+    <span class="lightbox-counter" id="lightboxCounter" style="display:none;"></span>
   </div>
 
   <script src="config.js"></script>

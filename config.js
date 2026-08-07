@@ -46,5 +46,21 @@ const cardsData = [
     }
 ];
 
+// ── 纪念日笺数据(可选)────────────────────────────
+// 格式：{ date: "M.D", desc: "描述", }
+// 按时间先后排列,页面会计算对应"第 N 天"
+const anniversaryData = [
+    { date: "2.7",   desc: "我们故事的开始" },
+    { date: "2.27",  desc: "（那一天，你我都记得）" },
+    { date: "3.22",  desc: "第一次送我奶茶的日子" },
+    { date: "3.30",  desc: "第一张不是闪照的照片" },
+    { date: "4.04",  desc: "第一次发关于你的视频" },
+    { date: "4.19",  desc: "再次送我奶茶的日子" },
+    { date: "4.27",  desc: "（那一天，也是我们的）" },
+    { date: "4.30",  desc: "送我果切的日子" },
+    { date: "5.18",  desc: "美梦！！" },
+    { date: "5.23",  desc: "送我甜点的日子" }
+];
+
 // 你的心情预设（可选：yuyue / youxian / qidai / ziyou / beishang / gudu / fennu / yihan / wuliao / kongxu / fadian /）
 const myMood = "qidai";

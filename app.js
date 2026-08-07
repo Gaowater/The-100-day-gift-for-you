@@ -1,6 +1,6 @@
 // ======================================================
-// app.js — 100天礼物主程序
-// 功能：天数、句子、卡片渲染、心情、BG、星空、相册等
+// app.js — 100天礼物主程序 v2.0(纸书手作风)
+// 功能：天数、进度、句子、卡片、心情、BG、星空、相册、灯箱
 // ======================================================
 
 // ─── 全局 ───
@@ -12,6 +12,30 @@ const diffDays = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
 document.getElementById('daysCount').textContent = diffDays >= 1 ? diffDays : 1;
 document.getElementById('todayDate').textContent =
   `今天 ${today.getFullYear()}年${today.getMonth() + 1}月${today.getDate()}日`;
+
+// ─── 下一个百天进度 ───
+(function initMilestone() {
+  const milestoneEl = document.getElementById('milestone');
+  const fill = document.getElementById('milestoneFill');
+  const fromEl = document.getElementById('milestoneFrom');
+  const toEl = document.getElementById('milestoneTo');
+  const noteEl = document.getElementById('milestoneNote');
+  if (!milestoneEl) return;
+
+  const day = Math.max(diffDays, 1);
+  const from = Math.floor((day - 1) / 100) * 100 + 1;   // 当前百天的起点(第 1/101/201 天)
+  const to = from + 99;                                  // 当前百天的终点(第 100/200/300 天)
+  const pct = Math.min(100, Math.max(0, ((day - from) / (to - from)) * 100));
+
+  fromEl.textContent = '第 ' + from + ' 天';
+  toEl.textContent = '第 ' + to + ' 天';
+  noteEl.textContent = '已走过这段旅程的 ' + Math.round(pct) + '%';
+  milestoneEl.style.opacity = '1';
+  // 延迟触发填充动画
+  requestAnimationFrame(() => {
+    setTimeout(() => { fill.style.width = pct + '%'; }, 300);
+  });
+})();
 
 // ─── 底部每日一句 ───
 const quotesByDay = {
@@ -49,36 +73,36 @@ cardsData.forEach((card, index) => {
   if (index === 4) {
     cardEl.addEventListener('dblclick', () => {
       openAlbum('album1');
-      cardEl.classList.remove('card-shake');
-      void cardEl.offsetWidth;
-      cardEl.classList.add('card-shake');
+      shakeCard(cardEl);
     });
   }
   if (index === 6) {
     cardEl.addEventListener('dblclick', () => {
       openAlbum('album2');
-      cardEl.classList.remove('card-shake');
-      void cardEl.offsetWidth;
-      cardEl.classList.add('card-shake');
+      shakeCard(cardEl);
     });
   }
   if (index === 8) {
     cardEl.addEventListener('dblclick', () => {
-      openSingleImage('images/album/secret.jpg');
-      cardEl.classList.remove('card-shake');
-      void cardEl.offsetWidth;
-      cardEl.classList.add('card-shake');
+      openLightbox('images/album/secret.jpg', []);
+      shakeCard(cardEl);
     });
   }
   container.appendChild(cardEl);
 });
+
+function shakeCard(el) {
+  el.classList.remove('card-shake');
+  void el.offsetWidth;
+  el.classList.add('card-shake');
+}
 
 // 卡片点击图片打开灯箱（事件委托，兼容动态生成）
 container.addEventListener('click', (e) => {
   const target = e.target.closest('.card-image');
   if (target) {
     const src = target.getAttribute('data-lightbox-src');
-    if (src) openLightbox(src);
+    if (src) openLightbox(src, []);
   }
 });
 
@@ -95,21 +119,117 @@ document.querySelectorAll('.card').forEach((card, i) => {
   setTimeout(() => observer.observe(card), i * 100);
 });
 
-// ─── 灯箱（单图放大） ───
-function openLightbox(src) {
-  const lb = document.getElementById('lightbox');
-  lb.querySelector('img').src = src;
-  lb.style.display = 'flex';
+// ─── 纪念日笺渐入 ───
+const annivSection = document.getElementById('anniversarySection');
+if (annivSection) {
+  const annivObs = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        annivSection.style.opacity = '1';
+        annivSection.style.transition = 'opacity 0.8s ease';
+        annivObs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  annivObs.observe(annivSection);
+}
+
+// ─── 渲染纪念日 ───
+(function renderAnniversary() {
+  const listEl = document.getElementById('anniversaryList');
+  if (!listEl) return;
+  if (typeof anniversaryData === 'undefined') return;
+  anniversaryData.forEach((item) => {
+    // 计算第 N 天
+    const [m, d] = item.date.split('.');
+    const date = new Date(2026, parseInt(m, 10) - 1, parseInt(d, 10));
+    const nth = Math.floor((date - startDate) / (1000 * 60 * 60 * 24)) + 1;
+    const el = document.createElement('div');
+    el.className = 'anniversary-item';
+    el.innerHTML =
+      '<span class="anniv-date">' + item.date + '</span>' +
+      '<span class="anniv-desc">' + item.desc + '</span>' +
+      '<span class="anniv-days">第 ' + nth + ' 天</span>';
+    listEl.appendChild(el);
+  });
+})();
+
+// ─── 灯箱(支持相册内左右切换 + 键盘) ───
+const lightbox = document.getElementById('lightbox');
+const lbImg = lightbox.querySelector('img');
+const lbCounter = document.getElementById('lightboxCounter');
+const lbPrev = document.getElementById('lightboxPrev');
+const lbNext = document.getElementById('lightboxNext');
+let lbList = [];      // 当前图片列表(空 = 单图)
+let lbIndex = 0;
+
+function openLightbox(src, list) {
+  lbList = list || [];
+  lbIndex = lbList.indexOf(src);
+  if (lbIndex === -1) { lbList = [src]; lbIndex = 0; }
+  lbImg.src = src;
+  lbImg.style.animation = 'none';
+  void lbImg.offsetWidth;
+  lbImg.style.animation = 'lbZoom 0.3s ease';
+  updateLightboxNav();
+  lightbox.style.display = 'flex';
   document.body.style.overflow = 'hidden';
 }
-document.getElementById('lightbox').addEventListener('click', (e) => {
-  if (e.target === e.currentTarget || e.target.classList.contains('lightbox-close')) {
-    e.currentTarget.style.display = 'none';
-    document.body.style.overflow = '';
-  }
+
+function updateLightboxNav() {
+  const multi = lbList.length > 1;
+  lbPrev.style.display = multi ? 'flex' : 'none';
+  lbNext.style.display = multi ? 'flex' : 'none';
+  lbCounter.style.display = multi ? 'block' : 'none';
+  if (multi) lbCounter.textContent = (lbIndex + 1) + ' / ' + lbList.length;
+  lbPrev.style.opacity = lbIndex === 0 ? '0.3' : '0.85';
+  lbNext.style.opacity = lbIndex === lbList.length - 1 ? '0.3' : '0.85';
+}
+
+function lbGoto(nextIndex) {
+  if (!lbList.length || nextIndex < 0 || nextIndex >= lbList.length) return;
+  lbIndex = nextIndex;
+  lbImg.src = lbList[lbIndex];
+  lbImg.style.animation = 'none';
+  void lbImg.offsetWidth;
+  lbImg.style.animation = 'lbZoom 0.3s ease';
+  updateLightboxNav();
+}
+lbPrev.addEventListener('click', (e) => { e.stopPropagation(); lbGoto(lbIndex - 1); });
+lbNext.addEventListener('click', (e) => { e.stopPropagation(); lbGoto(lbIndex + 1); });
+
+function closeLightbox() {
+  lightbox.style.display = 'none';
+  document.body.style.overflow = '';
+}
+lightbox.addEventListener('click', (e) => {
+  if (e.target === lightbox || e.target.classList.contains('lightbox-close')) closeLightbox();
 });
 
-// ─── 星空（双击表头触发） ───
+// 键盘左右键切换
+document.addEventListener('keydown', (e) => {
+  if (lightbox.style.display === 'none') return;
+  if (e.key === 'ArrowLeft') lbGoto(lbIndex - 1);
+  if (e.key === 'ArrowRight') lbGoto(lbIndex + 1);
+  if (e.key === 'Escape') closeLightbox();
+});
+
+// 触摸滑动切换
+let lbTouchX = null;
+lightbox.addEventListener('touchstart', (e) => { lbTouchX = e.touches[0].clientX; }, { passive: true });
+lightbox.addEventListener('touchend', (e) => {
+  if (lbTouchX === null) return;
+  const dx = e.changedTouches[0].clientX - lbTouchX;
+  if (Math.abs(dx) > 50) lbGoto(dx < 0 ? lbIndex + 1 : lbIndex - 1);
+  lbTouchX = null;
+}, { passive: true });
+
+// 放大动画
+const lbStyle = document.createElement('style');
+lbStyle.textContent = '@keyframes lbZoom { from { transform: scale(0.96); opacity: 0.6; } to { transform: scale(1); opacity: 1; } }';
+document.head.appendChild(lbStyle);
+
+// ─── 星空(双击表头触发) ───
 const headerArea = document.getElementById('headerArea');
 const starsContainer = document.getElementById('starsContainer');
 const headerHint = document.getElementById('headerHint');
@@ -131,54 +251,39 @@ function createStars() {
   }
 }
 
+function lightUpStars() {
+  if (starsActive) return;
+  starsActive = true;
+  headerArea.classList.add('stars-active');
+  headerHint.textContent = '✨ 星光已点亮';
+  createStars();
+  setTimeout(() => { headerHint.style.opacity = '0.4'; }, 2000);
+}
+
 headerArea.addEventListener('dblclick', (e) => {
   e.preventDefault();
-  if (!starsActive) {
-    starsActive = true;
-    headerArea.classList.add('stars-active');
-    headerHint.textContent = '✨ 星光已点亮';
-    createStars();
-    setTimeout(() => { headerHint.style.opacity = '0.4'; }, 2000);
-  }
+  lightUpStars();
 });
 
-// ─── 昼夜切换 ───
+// ─── 昼夜切换(单一绑定,持久化) ───
 const themeToggle = document.getElementById('themeToggle');
-let isNight = false;
-themeToggle.addEventListener('click', () => {
-  isNight = !isNight;
-  if (isNight) {
-    document.body.classList.add('night-mode');
-    if (!starsActive) {
-      starsActive = true;
-      headerArea.classList.add('stars-active');
-      headerHint.textContent = '✨ 星光已点亮';
-      createStars();
-      setTimeout(() => { headerHint.style.opacity = '0.4'; }, 2000);
-    }
-  } else {
-    document.body.classList.remove('night-mode');
-  }
+const prefersNight = localStorage.getItem('nightMode') === 'true';
+if (prefersNight) {
+  document.body.classList.add('night-mode');
+  lightUpStars();
+}
+themeToggle.addEventListener('click', function() {
+  const isNight = document.body.classList.toggle('night-mode');
+  localStorage.setItem('nightMode', isNight);
+  if (isNight) lightUpStars();
 });
 
-// ─── 昼夜切换 ───
-(function() {
-  const toggle = document.getElementById('themeToggle');
-  const prefersNight = localStorage.getItem('nightMode') === 'true';
-  if (prefersNight) document.body.classList.add('night-mode');
-
-  toggle.addEventListener('click', function() {
-    const isNight = document.body.classList.toggle('night-mode');
-    localStorage.setItem('nightMode', isNight);
-  });
-})();
-
-// ─── 背景音乐 ───
+// ─── 背景音乐(修复：播放时取消 muted) ───
 const bgm = document.getElementById('bgm');
 const musicBtn = document.getElementById('musicBtn');
 const iconOn = document.querySelector('.music-icon-on');
 const iconOff = document.querySelector('.music-icon-off');
-let musicPlaying = true;
+let musicPlaying = true;   // 初始 muted autoplay 视为"开"
 
 musicBtn.addEventListener('click', () => {
   if (musicPlaying) {
@@ -187,6 +292,7 @@ musicBtn.addEventListener('click', () => {
     iconOff.style.display = 'inline';
     musicPlaying = false;
   } else {
+    bgm.muted = false;               // 修复：真正解除静音
     bgm.play().catch(() => {});
     iconOn.style.display = 'inline';
     iconOff.style.display = 'none';
@@ -209,10 +315,17 @@ const moodMap = {
   fadian:  'mood-fadian'
 };
 
-// 我的心情（从 config.js 读取 myMood）
+// SVG 心情图标
+function moodSvg(mood) {
+  return '<svg class="mood-badge-svg" viewBox="0 0 24 24" aria-hidden="true"><use href="#' + moodMap[mood] + '"/></svg>';
+}
+
+// 我的心情(从 config.js 读取 myMood)
 const myMoodIcon = document.getElementById('myMoodIcon');
 if (myMood && moodMap[myMood]) {
-  myMoodIcon.className = 'mood-badge-icon ' + moodMap[myMood];
+  myMoodIcon.innerHTML = moodSvg(myMood);
+} else {
+  myMoodIcon.classList.add('mood-empty');
 }
 
 // 她的心情
@@ -221,9 +334,9 @@ const herMoodIcon = document.getElementById('herMoodIcon');
 const moodOverlay = document.getElementById('moodOverlay');
 const savedHerMood = localStorage.getItem('herMood');
 if (savedHerMood && moodMap[savedHerMood]) {
-  herMoodIcon.className = 'mood-badge-icon ' + moodMap[savedHerMood];
+  herMoodIcon.innerHTML = moodSvg(savedHerMood);
 } else {
-  herMoodIcon.className = 'mood-badge-icon mood-empty';
+  herMoodIcon.classList.add('mood-empty');
 }
 
 herMoodBadge.addEventListener('click', () => {
@@ -242,7 +355,8 @@ document.querySelectorAll('.mood-item').forEach((item) => {
   item.addEventListener('click', function () {
     const mood = this.getAttribute('data-mood');
     localStorage.setItem('herMood', mood);
-    herMoodIcon.className = 'mood-badge-icon ' + moodMap[mood];
+    herMoodIcon.classList.remove('mood-empty');
+    herMoodIcon.innerHTML = moodSvg(mood);
     moodOverlay.style.display = 'none';
     document.body.style.overflow = '';
   });
@@ -267,12 +381,12 @@ function openAlbum(albumId) {
   const grid = overlay.querySelector('.album-grid');
   const videoSection = overlay.querySelector('.album-video');
   grid.innerHTML = '';
-  data.photos.forEach((photo) => {
+  data.photos.forEach((photo, i) => {
     const img = document.createElement('img');
     img.src = 'images/album/' + photo;
     img.alt = photo;
     img.loading = 'lazy';
-    img.onclick = () => openLightbox('images/album/' + photo);
+    img.onclick = () => openLightbox('images/album/' + photo, data.photos.map(p => 'images/album/' + p));
     grid.appendChild(img);
   });
   videoSection.style.display = data.hasVideo ? 'block' : 'none';
@@ -290,7 +404,7 @@ document.getElementById('albumOverlay').addEventListener('click', function (e) {
   }
 });
 
-// ─── 单图弹出（secret.jpg） ───
+// ─── 单图弹出(secret.jpg) ───
 function openSingleImage(src) {
   const overlay = document.createElement('div');
   overlay.className = 'single-image-overlay';
